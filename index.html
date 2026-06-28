@@ -30,7 +30,6 @@
             overflow: hidden;
         }
 
-        /* Header */
         header {
             background-color: var(--primary-color);
             color: white;
@@ -41,12 +40,11 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* Main Content App Container */
         main {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            padding-bottom: 80px; /* Space for bottom nav */
+            padding-bottom: 80px;
         }
 
         .tab-content {
@@ -57,7 +55,6 @@
             display: block;
         }
 
-        /* Component: Timer */
         .timer-display {
             font-size: 4rem;
             font-weight: bold;
@@ -95,7 +92,6 @@
             background-color: var(--accent-color);
         }
 
-        /* Component: Inputs & Forms */
         .input-group {
             background: var(--card-bg);
             padding: 15px;
@@ -104,7 +100,7 @@
             margin-bottom: 20px;
         }
 
-        input, select {
+        input {
             width: 100%;
             padding: 10px;
             margin: 8px 0;
@@ -113,7 +109,6 @@
             font-size: 1rem;
         }
 
-        /* Component: Flashcards */
         .flashcard {
             background: var(--card-bg);
             min-height: 150px;
@@ -136,11 +131,13 @@
             top: 10px;
             right: 10px;
             background: #e74c3c;
+            color: white;
+            border: none;
             padding: 4px 8px;
             font-size: 0.8rem;
+            border-radius: 4px;
         }
 
-        /* Component: Checklist */
         .list-item {
             background: var(--card-bg);
             padding: 15px;
@@ -164,7 +161,6 @@
             cursor: pointer;
         }
 
-        /* Bottom Navigation Bar */
         nav {
             position: fixed;
             bottom: 0;
@@ -239,22 +235,18 @@
         let flashcards = JSON.parse(localStorage.getItem('cards')) || [];
         let todos = JSON.parse(localStorage.getItem('todos')) || [];
 
-        // --- TAB SYSTEM ---
         function switchTab(tabName, buttonElement) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            
             document.getElementById(`${tabName}-tab`).classList.add('active');
             buttonElement.classList.add('active');
-            
-            // Update Header Text
             const titles = { timer: 'Study Timer', flashcards: 'Flashcards', checklist: 'Subject Checklist' };
             document.getElementById('app-title').innerText = titles[tabName];
         }
 
         // --- TIMER LOGIC ---
         let timerInterval = null;
-        let timeLeft = 25 * 60; // 25 minutes in seconds
+        let timeLeft = 25 * 60;
 
         function updateTimerDisplay() {
             const minutes = Math.floor(timeLeft / 60);
@@ -303,7 +295,6 @@
             const front = document.getElementById('card-front').value.trim();
             const back = document.getElementById('card-back').value.trim();
             if (!front || !back) return alert("Fill out both sides!");
-            
             flashcards.push({ front, back, isFlipped: false });
             document.getElementById('card-front').value = '';
             document.getElementById('card-back').value = '';
@@ -316,7 +307,7 @@
         }
 
         function deleteCard(index, event) {
-            event.stopPropagation(); // Prevents flipping when clicking delete
+            event.stopPropagation();
             flashcards.splice(index, 1);
             saveCards();
         }
@@ -329,12 +320,10 @@
                 cardEl.className = 'flashcard';
                 cardEl.innerText = card.isFlipped ? card.back : card.front;
                 cardEl.onclick = () => toggleFlip(index);
-                
                 const delBtn = document.createElement('button');
                 delBtn.className = 'delete-btn';
                 delBtn.innerText = 'X';
                 delBtn.onclick = (e) => deleteCard(index, e);
-                
                 cardEl.appendChild(delBtn);
                 container.appendChild(cardEl);
             });
@@ -367,39 +356,53 @@
             todos.forEach((todo, index) => {
                 const item = document.createElement('div');
                 item.className = `list-item ${todo.completed ? 'completed' : ''}`;
-                
                 const leftDiv = document.createElement('div');
                 leftDiv.style.display = 'flex';
                 leftDiv.style.alignItems = 'center';
-                
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.className = 'checkbox';
                 checkbox.checked = todo.completed;
                 checkbox.onclick = () => toggleTodo(index);
-                
                 const textSpan = document.createElement('span');
                 textSpan.innerText = todo.text;
-                
                 leftDiv.appendChild(checkbox);
                 leftDiv.appendChild(textSpan);
-                
                 const delBtn = document.createElement('button');
                 delBtn.className = 'delete-btn';
                 delBtn.style.position = 'static';
                 delBtn.innerText = 'Delete';
                 delBtn.onclick = () => deleteTodo(index);
-                
                 item.appendChild(leftDiv);
                 item.appendChild(delBtn);
                 container.appendChild(item);
             });
         }
 
-        // Initial render on boot
         renderCards();
         renderTodos();
+
+        // --- AUTOMATIC OFFLINE CACHE (SERVICE WORKER) ---
+        if ('serviceWorker' in navigator) {
+            const cacheName = 'study-app-v1';
+            const cacheAssets = [window.location.pathname, window.location.href];
+
+            // আত্মনির্ভরশীল অফলাইন স্ক্রিপ্ট ইনজেকশন
+            const swCode = `
+                self.addEventListener('install', e => {
+                    e.waitUntil(caches.open('${cacheName}').then(cache => cache.addAll(${JSON.stringify(cacheAssets)})));
+                });
+                self.addEventListener('fetch', e => {
+                    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+                });
+            `;
+            
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            navigator.serviceWorker.register(URL.createObjectURL(blob))
+                .then(() => console.log('Offline system activated!'))
+                .catch(err => console.log('SW registration failed:', err));
+        }
     </script>
 </body>
-  </html>
-  
+    </html>
+    
