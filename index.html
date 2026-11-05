@@ -1,408 +1,180 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Study Suite</title>
-    <style>
-        :root {
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --primary-color: #4a90e2;
-            --accent-color: #2ecc71;
-            --text-color: #333333;
-            --text-light: #7f8c8d;
-        }
+<title>Shadow Racing</title>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: '-apple-system', BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+<style>
+body {
+    margin: 0;
+    background: #222;
+    text-align: center;
+    font-family: Arial;
+    color: white;
+}
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
+h1 {
+    color: cyan;
+}
 
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            text-align: center;
-            padding: 15px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+canvas {
+    background: #555;
+    border: 4px solid white;
+    max-width: 95vw;
+}
 
-        main {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            padding-bottom: 80px;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .timer-display {
-            font-size: 4rem;
-            font-weight: bold;
-            text-align: center;
-            margin: 40px 0;
-            color: var(--primary-color);
-        }
-
-        .button-group {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        button.secondary {
-            background-color: var(--text-light);
-        }
-
-        button.success {
-            background-color: var(--accent-color);
-        }
-
-        .input-group {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-
-        .flashcard {
-            background: var(--card-bg);
-            min-height: 150px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            position: relative;
-            border-left: 5px solid var(--primary-color);
-        }
-
-        .delete-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            font-size: 0.8rem;
-            border-radius: 4px;
-        }
-
-        .list-item {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .list-item.completed span {
-            text-decoration: line-through;
-            color: var(--text-light);
-        }
-
-        .checkbox {
-            width: 24px;
-            height: 24px;
-            margin-right: 15px;
-            cursor: pointer;
-        }
-
-        nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 65px;
-            background-color: var(--card-bg);
-            display: flex;
-            border-top: 1px solid #ddd;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
-        }
-
-        .nav-btn {
-            flex: 1;
-            background: none;
-            color: var(--text-light);
-            border: none;
-            border-radius: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-        }
-
-        .nav-btn.active {
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-    </style>
+button {
+    padding: 12px 25px;
+    margin: 8px;
+    font-size: 18px;
+    background: cyan;
+    border: none;
+    border-radius: 8px;
+}
+</style>
 </head>
+
 <body>
 
-    <header id="app-title">Study Timer</header>
+<h1>SHADOW RACING 🚗</h1>
 
-    <main>
-        <section id="timer-tab" class="tab-content active">
-            <div class="timer-display" id="time-display">25:00</div>
-            <div class="button-group">
-                <button id="start-btn" class="success" onclick="toggleTimer()">Start</button>
-                <button class="secondary" onclick="resetTimer()">Reset</button>
-            </div>
-        </section>
+<h2>Score: <span id="score">0</span></h2>
 
-        <section id="flashcards-tab" class="tab-content">
-            <div class="input-group">
-                <input type="text" id="card-front" placeholder="Front (Question)">
-                <input type="text" id="card-back" placeholder="Back (Answer)">
-                <button style="width: 100%;" onclick="addFlashcard()">Add Flashcard</button>
-            </div>
-            <div id="flashcards-container"></div>
-        </section>
+<canvas id="game" width="350" height="550"></canvas>
 
-        <section id="checklist-tab" class="tab-content">
-            <div class="input-group">
-                <input type="text" id="todo-input" placeholder="Enter subject task...">
-                <button style="width: 100%;" onclick="addTodo()">Add Task</button>
-            </div>
-            <div id="checklist-container"></div>
-        </section>
-    </main>
+<br>
 
-    <nav>
-        <button class="nav-btn active" onclick="switchTab('timer', this)">⏱️<br>Timer</button>
-        <button class="nav-btn" onclick="switchTab('flashcards', this)">📇<br>Cards</button>
-        <button class="nav-btn" onclick="switchTab('checklist', this)">✅<br>Tasks</button>
-    </nav>
+<button onclick="moveLeft()">⬅ LEFT</button>
+<button onclick="moveRight()">RIGHT ➡</button>
+<br>
+<button onclick="restart()">RESTART</button>
 
-    <script>
-        // --- STATE MANAGEMENT & LOCALSTORAGE ---
-        let flashcards = JSON.parse(localStorage.getItem('cards')) || [];
-        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+<script>
 
-        function switchTab(tabName, buttonElement) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`${tabName}-tab`).classList.add('active');
-            buttonElement.classList.add('active');
-            const titles = { timer: 'Study Timer', flashcards: 'Flashcards', checklist: 'Subject Checklist' };
-            document.getElementById('app-title').innerText = titles[tabName];
-        }
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-        // --- TIMER LOGIC ---
-        let timerInterval = null;
-        let timeLeft = 25 * 60;
+let player = {
+    x: 150,
+    y: 450,
+    width: 45,
+    height: 75
+};
 
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            document.getElementById('time-display').innerText = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
+let enemy = {
+    x: 70,
+    y: -100,
+    width: 45,
+    height: 75,
+    speed: 4
+};
 
-        function toggleTimer() {
-            const startBtn = document.getElementById('start-btn');
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                startBtn.innerText = "Start";
-                startBtn.className = "success";
-            } else {
-                startBtn.innerText = "Pause";
-                startBtn.className = "secondary";
-                timerInterval = setInterval(() => {
-                    if (timeLeft > 0) {
-                        timeLeft--;
-                        updateTimerDisplay();
-                    } else {
-                        clearInterval(timerInterval);
-                        alert("Time's up! Take a break.");
-                        resetTimer();
-                    }
-                }, 1000);
-            }
-        }
+let score = 0;
+let gameOver = false;
 
-        function resetTimer() {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            timeLeft = 25 * 60;
-            updateTimerDisplay();
-            const startBtn = document.getElementById('start-btn');
-            startBtn.innerText = "Start";
-            startBtn.className = "success";
-        }
+function drawCar(x, y, color) {
 
-        // --- FLASHCARDS LOGIC ---
-        function saveCards() { localStorage.setItem('cards', JSON.stringify(flashcards)); renderCards(); }
+    ctx.fillStyle = color;
 
-        function addFlashcard() {
-            const front = document.getElementById('card-front').value.trim();
-            const back = document.getElementById('card-back').value.trim();
-            if (!front || !back) return alert("Fill out both sides!");
-            flashcards.push({ front, back, isFlipped: false });
-            document.getElementById('card-front').value = '';
-            document.getElementById('card-back').value = '';
-            saveCards();
-        }
+    ctx.fillRect(x, y, 45, 75);
 
-        function toggleFlip(index) {
-            flashcards[index].isFlipped = !flashcards[index].isFlipped;
-            renderCards();
-        }
+    ctx.fillStyle = "lightblue";
+    ctx.fillRect(x + 8, y + 10, 29, 20);
 
-        function deleteCard(index, event) {
-            event.stopPropagation();
-            flashcards.splice(index, 1);
-            saveCards();
-        }
+    ctx.fillStyle = "black";
+    ctx.fillRect(x - 4, y + 12, 5, 18);
+    ctx.fillRect(x + 44, y + 12, 5, 18);
+    ctx.fillRect(x - 4, y + 48, 5, 18);
+    ctx.fillRect(x + 44, y + 48, 5, 18);
+}
 
-        function renderCards() {
-            const container = document.getElementById('flashcards-container');
-            container.innerHTML = '';
-            flashcards.forEach((card, index) => {
-                const cardEl = document.createElement('div');
-                cardEl.className = 'flashcard';
-                cardEl.innerText = card.isFlipped ? card.back : card.front;
-                cardEl.onclick = () => toggleFlip(index);
-                const delBtn = document.createElement('button');
-                delBtn.className = 'delete-btn';
-                delBtn.innerText = 'X';
-                delBtn.onclick = (e) => deleteCard(index, e);
-                cardEl.appendChild(delBtn);
-                container.appendChild(cardEl);
-            });
-        }
+function drawRoad() {
 
-        // --- CHECKLIST LOGIC ---
-        function saveTodos() { localStorage.setItem('todos', JSON.stringify(todos)); renderTodos(); }
+    ctx.fillStyle = "#444";
+    ctx.fillRect(0, 0, 350, 550);
 
-        function addTodo() {
-            const text = document.getElementById('todo-input').value.trim();
-            if (!text) return;
-            todos.push({ text, completed: false });
-            document.getElementById('todo-input').value = '';
-            saveTodos();
-        }
+    ctx.fillStyle = "white";
 
-        function toggleTodo(index) {
-            todos[index].completed = !todos[index].completed;
-            saveTodos();
-        }
+    for(let i = 0; i < 550; i += 100) {
+        ctx.fillRect(170, i, 8, 50);
+    }
+}
 
-        function deleteTodo(index) {
-            todos.splice(index, 1);
-            saveTodos();
-        }
+function update() {
 
-        function renderTodos() {
-            const container = document.getElementById('checklist-container');
-            container.innerHTML = '';
-            todos.forEach((todo, index) => {
-                const item = document.createElement('div');
-                item.className = `list-item ${todo.completed ? 'completed' : ''}`;
-                const leftDiv = document.createElement('div');
-                leftDiv.style.display = 'flex';
-                leftDiv.style.alignItems = 'center';
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.className = 'checkbox';
-                checkbox.checked = todo.completed;
-                checkbox.onclick = () => toggleTodo(index);
-                const textSpan = document.createElement('span');
-                textSpan.innerText = todo.text;
-                leftDiv.appendChild(checkbox);
-                leftDiv.appendChild(textSpan);
-                const delBtn = document.createElement('button');
-                delBtn.className = 'delete-btn';
-                delBtn.style.position = 'static';
-                delBtn.innerText = 'Delete';
-                delBtn.onclick = () => deleteTodo(index);
-                item.appendChild(leftDiv);
-                item.appendChild(delBtn);
-                container.appendChild(item);
-            });
-        }
+    if(gameOver) return;
 
-        renderCards();
-        renderTodos();
+    drawRoad();
 
-        // --- AUTOMATIC OFFLINE CACHE (SERVICE WORKER) ---
-        if ('serviceWorker' in navigator) {
-            const cacheName = 'study-app-v1';
-            const cacheAssets = [window.location.pathname, window.location.href];
+    drawCar(player.x, player.y, "cyan");
 
-            // আত্মনির্ভরশীল অফলাইন স্ক্রিপ্ট ইনজেকশন
-            const swCode = `
-                self.addEventListener('install', e => {
-                    e.waitUntil(caches.open('${cacheName}').then(cache => cache.addAll(${JSON.stringify(cacheAssets)})));
-                });
-                self.addEventListener('fetch', e => {
-                    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-                });
-            `;
-            
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            navigator.serviceWorker.register(URL.createObjectURL(blob))
-                .then(() => console.log('Offline system activated!'))
-                .catch(err => console.log('SW registration failed:', err));
-        }
-    </script>
+    drawCar(enemy.x, enemy.y, "red");
+
+    enemy.y += enemy.speed;
+
+    if(enemy.y > 550) {
+        enemy.y = -100;
+        enemy.x = Math.random() * 280;
+        score += 10;
+        enemy.speed += 0.2;
+
+        document.getElementById("score").innerText = score;
+    }
+
+    if(
+        player.x < enemy.x + 45 &&
+        player.x + 45 > enemy.x &&
+        player.y < enemy.y + 75 &&
+        player.y + 75 > enemy.y
+    ) {
+
+        gameOver = true;
+
+        ctx.fillStyle = "yellow";
+        ctx.font = "35px Arial";
+        ctx.fillText("GAME OVER", 65, 280);
+    }
+
+    requestAnimationFrame(update);
+}
+
+function moveLeft() {
+    if(player.x > 10 && !gameOver) {
+        player.x -= 30;
+    }
+}
+
+function moveRight() {
+    if(player.x < 295 && !gameOver) {
+        player.x += 30;
+    }
+}
+
+document.addEventListener("keydown", function(e) {
+
+    if(e.key === "ArrowLeft") moveLeft();
+
+    if(e.key === "ArrowRight") moveRight();
+
+});
+
+function restart() {
+
+    player.x = 150;
+    enemy.x = 70;
+    enemy.y = -100;
+    enemy.speed = 4;
+
+    score = 0;
+    gameOver = false;
+
+    document.getElementById("score").innerText = score;
+
+    update();
+}
+
+update();
+
+</script>
+
 </body>
-    </html>
-    
+</html>
